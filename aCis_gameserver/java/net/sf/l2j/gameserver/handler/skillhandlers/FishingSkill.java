@@ -1,30 +1,31 @@
 package net.sf.l2j.gameserver.handler.skillhandlers;
 
-import org.slf4j.LoggerFactory;
+import net.sf.l2j.gameserver.handler.IHandler;
 
-import net.sf.l2j.gameserver.handler.ISkillHandler;
 import net.sf.l2j.gameserver.model.L2Fishing;
 import net.sf.l2j.gameserver.model.ShotType;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.skills.L2Skill;
 import net.sf.l2j.gameserver.templates.skills.ESkillType;
 
-public class FishingSkill implements ISkillHandler {
+public class FishingSkill implements IHandler {
 
-	private static final ESkillType[] SKILL_IDS
-			= {
-				ESkillType.PUMPING,
-				ESkillType.REELING
-			};
+	private static final ESkillType[] SKILL_IDS = {
+		ESkillType.PUMPING,
+		ESkillType.REELING
+	};
 
 	@Override
-	public void useSkill(Creature activeChar, L2Skill skill, WorldObject[] targets) {
+	public void invoke(Object...args) {
+		final Creature activeChar = (Creature) args[0];
+		final L2Skill skill = (L2Skill) args[1];
+		final WorldObject[] targets = (WorldObject[]) args[2];
 		if (!(activeChar instanceof Player)) {
 			return;
 		}
@@ -72,7 +73,7 @@ public class FishingSkill implements ISkillHandler {
 	}
 
 	@Override
-	public ESkillType[] getSkillIds() {
+	public ESkillType[] commands() {
 		return SKILL_IDS;
 	}
 }

@@ -1,14 +1,14 @@
 package net.sf.l2j.gameserver.handler.itemhandlers;
 
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.l2j.gameserver.handler.IHandler;
 
-import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.model.actor.Pet;
 import net.sf.l2j.gameserver.model.actor.Playable;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.ai.CtrlIntention;
 import net.sf.l2j.gameserver.model.actor.instance.Servitor;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ExUseSharedGroupItem;
@@ -18,10 +18,14 @@ import net.sf.l2j.gameserver.skills.L2Skill;
 /**
  * Template for item skills handler.
  */
-public class ItemSkills implements IItemHandler {
+@Slf4j
+public class ItemSkills implements IHandler {
 
 	@Override
-	public void useItem(Playable playable, ItemInstance item, boolean forceUse) {
+	public void invoke(Object... args) {
+		final Playable playable = (Playable) args[0];
+		final ItemInstance item = (ItemInstance) args[1];
+		final boolean forceUse = (boolean) args[2];
 		if (playable instanceof Servitor) {
 			return;
 		}
@@ -37,7 +41,7 @@ public class ItemSkills implements IItemHandler {
 
 		final L2Skill itemSkill = item.getEtcItem().getStaticSkills().get(0).getSkill();
 		if (itemSkill == null) {
-			_log.info(item.getName() + " does not have registered any skill for handler.");
+			log.info("{} does not have registered any skill for handler.", item.getName());
 			return;
 		}
 
@@ -110,7 +114,7 @@ public class ItemSkills implements IItemHandler {
 
 		// Reuse.
 		int reuseDelay = itemSkill.getReuseDelay();
-		if (item.isEtcItem()) {
+		if (item.isEtc()) {
 			if (item.getEtcItem().getReuseDelay() > reuseDelay) {
 				reuseDelay = item.getEtcItem().getReuseDelay();
 			}

@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.model.zone;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Zone Ids.
  *
@@ -26,19 +24,19 @@ public enum ZoneId {
 	DANGER_AREA(15),
 	CAST_ON_ARTIFACT(16),
 	NO_RESTART(17),
-	SCRIPT(18);
+	SCRIPT(18),
+	GLT(19),
+	GLT_BUSH(20);
 
-	private final int _id;
+	public static final ZoneId[] VALUES = values();
+	
+	private final int id;
 
 	private ZoneId(int id) {
-		_id = id;
+		this.id = id;
 	}
 
 	public int getId() {
-		return _id;
-	}
-
-	public static int getZoneCount() {
-		return values().length;
+		return id;
 	}
 }

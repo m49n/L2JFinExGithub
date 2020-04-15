@@ -2,15 +2,29 @@ package net.sf.l2j.gameserver.network.clientpackets;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.handler.ChatHandler;
-import net.sf.l2j.gameserver.handler.IChatHandler;
+import net.sf.l2j.gameserver.handler.HandlerTable;
+import net.sf.l2j.gameserver.handler.IHandler;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatAll;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatAlliance;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatClan;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatHeroVoice;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatParty;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatPartyMatchRoom;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatPartyRoomAll;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatPartyRoomCommander;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatPetition;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatShout;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatTell;
+import net.sf.l2j.gameserver.handler.chathandlers.ChatTrade;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public final class Say2 extends L2GameClientPacket {
 
 	private static final Logger CHAT_LOG = LoggerFactory.getLogger("chat");
@@ -35,67 +49,65 @@ public final class Say2 extends L2GameClientPacket {
 	public static final int HERO_VOICE = 17;
 	public static final int CRITICAL_ANNOUNCE = 18;
 
-	private static final String[] CHAT_NAMES
-			= {
-				"ALL",
-				"SHOUT",
-				"TELL",
-				"PARTY",
-				"CLAN",
-				"GM",
-				"PETITION_PLAYER",
-				"PETITION_GM",
-				"TRADE",
-				"ALLIANCE",
-				"ANNOUNCEMENT", // 10
-				"BOAT",
-				"WILLCRASHCLIENT:)",
-				"FAKEALL?",
-				"PARTYMATCH_ROOM",
-				"PARTYROOM_COMMANDER",
-				"PARTYROOM_ALL",
-				"HERO_VOICE",
-				"CRITICAL_ANNOUNCEMENT"
-			};
+	private static final String[] CHAT_NAMES = {
+		"ALL",
+		"SHOUT",
+		"TELL",
+		"PARTY",
+		"CLAN",
+		"GM",
+		"PETITION_PLAYER",
+		"PETITION_GM",
+		"TRADE",
+		"ALLIANCE",
+		"ANNOUNCEMENT", // 10
+		"BOAT",
+		"WILLCRASHCLIENT:)",
+		"FAKEALL?",
+		"PARTYMATCH_ROOM",
+		"PARTYROOM_COMMANDER",
+		"PARTYROOM_ALL",
+		"HERO_VOICE",
+		"CRITICAL_ANNOUNCEMENT"
+	};
 
-	private static final String[] WALKER_COMMAND_LIST
-			= {
-				"USESKILL",
-				"USEITEM",
-				"BUYITEM",
-				"SELLITEM",
-				"SAVEITEM",
-				"LOADITEM",
-				"MSG",
-				"DELAY",
-				"LABEL",
-				"JMP",
-				"CALL",
-				"RETURN",
-				"MOVETO",
-				"NPCSEL",
-				"NPCDLG",
-				"DLGSEL",
-				"CHARSTATUS",
-				"POSOUTRANGE",
-				"POSINRANGE",
-				"GOHOME",
-				"SAY",
-				"EXIT",
-				"PAUSE",
-				"STRINDLG",
-				"STRNOTINDLG",
-				"CHANGEWAITTYPE",
-				"FORCEATTACK",
-				"ISMEMBER",
-				"REQUESTJOINPARTY",
-				"REQUESTOUTPARTY",
-				"QUITPARTY",
-				"MEMBERSTATUS",
-				"CHARBUFFS",
-				"ITEMCOUNT",
-				"FOLLOWTELEPORT"
-			};
+	private static final String[] WALKER_COMMAND_LIST = {
+		"USESKILL",
+		"USEITEM",
+		"BUYITEM",
+		"SELLITEM",
+		"SAVEITEM",
+		"LOADITEM",
+		"MSG",
+		"DELAY",
+		"LABEL",
+		"JMP",
+		"CALL",
+		"RETURN",
+		"MOVETO",
+		"NPCSEL",
+		"NPCDLG",
+		"DLGSEL",
+		"CHARSTATUS",
+		"POSOUTRANGE",
+		"POSINRANGE",
+		"GOHOME",
+		"SAY",
+		"EXIT",
+		"PAUSE",
+		"STRINDLG",
+		"STRNOTINDLG",
+		"CHANGEWAITTYPE",
+		"FORCEATTACK",
+		"ISMEMBER",
+		"REQUESTJOINPARTY",
+		"REQUESTOUTPARTY",
+		"QUITPARTY",
+		"MEMBERSTATUS",
+		"CHARBUFFS",
+		"ITEMCOUNT",
+		"FOLLOWTELEPORT"
+	};
 
 	private String _text;
 	private int _type;
@@ -164,9 +176,52 @@ public final class Say2 extends L2GameClientPacket {
 
 		_text = _text.replaceAll("\\\\n", "");
 
-		IChatHandler handler = ChatHandler.getInstance().getChatHandler(_type);
+		IHandler handler;
+		switch (_type) {
+			case ALL:
+				handler = HandlerTable.getInstance().get(ChatAll.class);
+				break;
+			case ALLIANCE:
+				handler = HandlerTable.getInstance().get(ChatAlliance.class);
+				break;
+			case CLAN:
+				handler = HandlerTable.getInstance().get(ChatClan.class);
+				break;
+			case HERO_VOICE:
+				handler = HandlerTable.getInstance().get(ChatHeroVoice.class);
+				break;
+			case PARTY:
+				handler = HandlerTable.getInstance().get(ChatParty.class);
+				break;
+			case PARTYMATCH_ROOM:
+				handler = HandlerTable.getInstance().get(ChatPartyMatchRoom.class);
+				break;
+			case PARTYROOM_ALL:
+				handler = HandlerTable.getInstance().get(ChatPartyRoomAll.class);
+				break;
+			case PARTYROOM_COMMANDER:
+				handler = HandlerTable.getInstance().get(ChatPartyRoomCommander.class);
+				break;
+			case PETITION_GM:
+			case PETITION_PLAYER:
+				handler = HandlerTable.getInstance().get(ChatPetition.class);
+				break;
+			case SHOUT:
+				handler = HandlerTable.getInstance().get(ChatShout.class);
+				break;
+			case TELL:
+				handler = HandlerTable.getInstance().get(ChatTell.class);
+				break;
+			case TRADE:
+				handler = HandlerTable.getInstance().get(ChatTrade.class);
+				break;
+			default:
+				log.warn("Handler for {} not found!", _type);
+				throw new UnsupportedOperationException();
+		}
+
 		if (handler != null) {
-			handler.handleChat(_type, activeChar, _target, _text);
+			handler.invoke(_type, activeChar, _target, _text);
 		} else {
 			_log.warn(activeChar.getName() + " tried to use unregistred chathandler type: " + _type + ".");
 		}

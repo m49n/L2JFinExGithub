@@ -1,7 +1,5 @@
 package net.sf.finex.events;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +28,10 @@ public class EventBus {
 
 	public <T> void unsubscribe(AbstractEventSubscription<T> subscription) {
 		subscriptions.remove(subscription);
+	}
+
+	public <T> void unsubscribeAll() {
+		subscriptions.clear();
 	}
 
 }

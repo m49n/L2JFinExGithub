@@ -1,18 +1,16 @@
 package net.sf.l2j.gameserver.handler.admincommandhandlers;
 
-import org.slf4j.LoggerFactory;
 
 import java.util.StringTokenizer;
-
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.World;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
+import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
 import net.sf.l2j.gameserver.model.actor.instance.Chest;
-import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.Earthquake;
 import net.sf.l2j.gameserver.network.serverpackets.ExRedSky;
@@ -46,32 +44,31 @@ import net.sf.l2j.gameserver.util.Broadcast;
  */
 public class AdminEffects implements IAdminCommandHandler {
 
-	private static final String[] ADMIN_COMMANDS
-			= {
-				"admin_hide",
-				"admin_earthquake",
-				"admin_earthquake_menu",
-				"admin_gmspeed",
-				"admin_gmspeed_menu",
-				"admin_unpara_all",
-				"admin_para_all",
-				"admin_unpara",
-				"admin_para",
-				"admin_unpara_all_menu",
-				"admin_para_all_menu",
-				"admin_unpara_menu",
-				"admin_para_menu",
-				"admin_social",
-				"admin_social_menu",
-				"admin_effect",
-				"admin_effect_menu",
-				"admin_abnormal",
-				"admin_abnormal_menu",
-				"admin_jukebox",
-				"admin_play_sound",
-				"admin_atmosphere",
-				"admin_atmosphere_menu"
-			};
+	private static final String[] ADMIN_COMMANDS = {
+		"admin_hide",
+		"admin_earthquake",
+		"admin_earthquake_menu",
+		"admin_gmspeed",
+		"admin_gmspeed_menu",
+		"admin_unpara_all",
+		"admin_para_all",
+		"admin_unpara",
+		"admin_para",
+		"admin_unpara_all_menu",
+		"admin_para_all_menu",
+		"admin_unpara_menu",
+		"admin_para_menu",
+		"admin_social",
+		"admin_social_menu",
+		"admin_effect",
+		"admin_effect_menu",
+		"admin_abnormal",
+		"admin_abnormal_menu",
+		"admin_jukebox",
+		"admin_play_sound",
+		"admin_atmosphere",
+		"admin_atmosphere_menu"
+	};
 
 	@Override
 	public boolean useAdminCommand(String command, Player activeChar) {
@@ -79,7 +76,7 @@ public class AdminEffects implements IAdminCommandHandler {
 		st.nextToken();
 
 		if (command.startsWith("admin_hide")) {
-			if (!activeChar.getAppearance().getInvisible()) {
+			if (!activeChar.getAppearance().isInvisible()) {
 				activeChar.getAppearance().setInvisible();
 				activeChar.decayMe();
 				activeChar.broadcastUserInfo();
@@ -91,7 +88,7 @@ public class AdminEffects implements IAdminCommandHandler {
 		} else if (command.startsWith("admin_earthquake")) {
 			try {
 				activeChar.broadcastPacket(new Earthquake(activeChar.getX(), activeChar.getY(), activeChar.getZ(), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 				activeChar.sendMessage("Use: //earthquake <intensity> <duration>");
 			}
 		} else if (command.startsWith("admin_atmosphere")) {

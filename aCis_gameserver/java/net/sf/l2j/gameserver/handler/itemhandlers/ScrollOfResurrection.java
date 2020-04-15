@@ -1,22 +1,24 @@
 package net.sf.l2j.gameserver.handler.itemhandlers;
 
-import org.slf4j.LoggerFactory;
+import net.sf.l2j.gameserver.handler.IHandler;
 
-import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Pet;
 import net.sf.l2j.gameserver.model.actor.Playable;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.entity.Siege;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.skills.L2Skill;
 
-public class ScrollOfResurrection implements IItemHandler {
+public class ScrollOfResurrection implements IHandler {
 
 	@Override
-	public void useItem(Playable playable, ItemInstance item, boolean forceUse) {
+	public void invoke(Object... args) {
+		final Playable playable = (Playable) args[0];
+		final ItemInstance item = (ItemInstance) args[1];
+		final boolean forceUse = (boolean) args[2];
 		if (!(playable instanceof Player)) {
 			return;
 		}

@@ -1,6 +1,5 @@
 package net.sf.l2j.gameserver.model.item.kind;
 
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,8 +9,8 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.l2j.gameserver.data.SkillTable;
-import net.sf.l2j.gameserver.handler.ISkillHandler;
-import net.sf.l2j.gameserver.handler.SkillHandler;
+import net.sf.l2j.gameserver.handler.HandlerTable;
+import net.sf.l2j.gameserver.handler.IHandler;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
 import net.sf.l2j.gameserver.model.actor.Player;
@@ -207,10 +206,18 @@ public final class Weapon extends Item {
 		return (int) owner.getStat().calcStat(Stats.AttackMpConsumeRate, _mpConsume, owner, null);
 	}
 
+	public int getMpConsume() {
+		return _mpConsume;
+	}
+	
 	public int getHpConsume(Creature owner) {
 		return (int) owner.getStat().calcStat(Stats.AttackHpConsumeRate, _hpConsume, owner, null);
 	}
 
+	public int getHpConsume() {
+		return _hpConsume;
+	}
+	
 	/**
 	 * @return The skill player obtains when he equiped weapon +4 or more (for
 	 * duals SA)
@@ -221,6 +228,14 @@ public final class Weapon extends Item {
 		}
 
 		return _enchant4Skill.getSkill();
+	}
+
+	public IntIntHolder getEnchant4Holder() {
+		if (_enchant4Skill == null) {
+			return null;
+		}
+
+		return _enchant4Skill;
 	}
 
 	/**
@@ -320,15 +335,13 @@ public final class Weapon extends Item {
 			return Collections.emptyList();
 		}
 
-		// Get the skill handler corresponding to the skill type
-		ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(skillOnCast.getSkillType());
-
 		Creature[] targets = new Creature[1];
 		targets[0] = target;
 
-		// Launch the magic skill and calculate its effects
+		// Get the skill handler corresponding to the skill type
+		final IHandler handler = HandlerTable.getInstance().get(skillOnCast.getSkillType());
 		if (handler != null) {
-			handler.useSkill(caster, skillOnCast, targets);
+			handler.invoke(caster, skillOnCast, targets);
 		} else {
 			skillOnCast.useSkill(caster, targets);
 		}

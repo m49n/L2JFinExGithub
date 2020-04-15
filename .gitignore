@@ -1,6 +1,5 @@
 aCis_gameserver/build
 aCis_datapack/build
-game
 server
 /target/
 .classpath
@@ -9,3 +8,4 @@ server
 animations.txt
 /nbproject/private/
 /build/
+/dist/

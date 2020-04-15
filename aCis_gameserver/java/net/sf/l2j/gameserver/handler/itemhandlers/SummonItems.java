@@ -1,14 +1,12 @@
 package net.sf.l2j.gameserver.handler.itemhandlers;
 
-import org.slf4j.LoggerFactory;
-
-import java.util.logging.Level;
+import lombok.extern.slf4j.Slf4j;
 
 import net.sf.l2j.commons.concurrent.ThreadPool;
 
 import net.sf.l2j.gameserver.data.NpcTable;
 import net.sf.l2j.gameserver.data.xml.SummonItemData;
-import net.sf.l2j.gameserver.handler.IItemHandler;
+import net.sf.l2j.gameserver.handler.IHandler;
 import net.sf.l2j.gameserver.model.L2Spawn;
 import net.sf.l2j.gameserver.model.World;
 import net.sf.l2j.gameserver.model.WorldObject;
@@ -19,7 +17,8 @@ import net.sf.l2j.gameserver.model.actor.Pet;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.holder.IntIntHolder;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.EItemLocation;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillLaunched;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
@@ -28,10 +27,14 @@ import net.sf.l2j.gameserver.network.serverpackets.SetupGauge.GaugeColor;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.util.Broadcast;
 
-public class SummonItems implements IItemHandler {
+@Slf4j
+public class SummonItems implements IHandler {
 
 	@Override
-	public void useItem(Playable playable, ItemInstance item, boolean forceUse) {
+	public void invoke(Object... args) {
+		final Playable playable = (Playable) args[0];
+		final ItemInstance item = (ItemInstance) args[1];
+		final boolean forceUse = (boolean) args[2];
 		if (!(playable instanceof Player)) {
 			return;
 		}
@@ -135,7 +138,7 @@ public class SummonItems implements IItemHandler {
 				_activeChar.setIsCastingNow(false);
 
 				// check for summon item validity
-				if (_item == null || _item.getOwnerId() != _activeChar.getObjectId() || _item.getLocation() != ItemInstance.ItemLocation.INVENTORY) {
+				if (_item == null || _item.getOwnerId() != _activeChar.getObjectId() || _item.getLocation() != EItemLocation.INVENTORY) {
 					return;
 				}
 
@@ -160,7 +163,7 @@ public class SummonItems implements IItemHandler {
 				pet.startFeed();
 				pet.setFollowStatus(true);
 			} catch (Exception e) {
-				_log.error("", e);
+				log.error("", e);
 			}
 		}
 	}

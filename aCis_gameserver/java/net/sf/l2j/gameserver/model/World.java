@@ -11,6 +11,10 @@ import net.sf.l2j.gameserver.model.actor.Pet;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.location.Location;
+import net.sf.l2j.gameserver.network.SystemMessageId;
+import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
+import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
+import net.sf.l2j.gameserver.scripting.QuestState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +45,7 @@ public final class World {
 	private final Map<Integer, WorldObject> _objects = new ConcurrentHashMap<>();
 	private final Map<Integer, Pet> _pets = new ConcurrentHashMap<>();
 	private final Map<Integer, Player> _players = new ConcurrentHashMap<>();
-	@Getter
-	private final Map<NpcTemplate, Npc> npcTemplates = new ConcurrentHashMap<>();
+	@Getter private final Map<NpcTemplate, Npc> npcTemplates = new ConcurrentHashMap<>();
 
 	private final WorldRegion[][] _worldRegions = new WorldRegion[REGIONS_X + 1][REGIONS_Y + 1];
 
@@ -78,8 +81,8 @@ public final class World {
 
 	public void removeObject(WorldObject object) {
 		_objects.remove(object.getObjectId());
-		if (object instanceof Npc) {
-			final Npc npc = (Npc) object;
+		if (object.isNpc()) {
+			final Npc npc = object.getNpc();
 			npcTemplates.remove(npc.getTemplate(), npc);
 		}
 	}
@@ -183,6 +186,23 @@ public final class World {
 			}
 		}
 		_log.info("All visibles NPCs are now deleted.");
+	}
+
+	public void broadcastSystemMessagePacket(SystemMessageId packet) {
+		_players.values().stream().filter(next -> next.isOnline()).forEachOrdered(next -> next.sendPacket(packet));
+	}
+
+	public void broadcastPacket(L2GameServerPacket packet) {
+		_players.values().stream().filter(next -> next.isOnline()).forEachOrdered(next -> next.sendPacket(packet));
+	}
+
+	public void broadcastMessage(String text, boolean withSound) {
+		_players.values().stream().filter(next -> next.isOnline()).forEachOrdered(next -> {
+			next.sendMessage(text);
+			if (withSound) {
+				next.sendPacket(new PlaySound(QuestState.SOUND_MIDDLE));
+			}
+		});
 	}
 
 	public static World getInstance() {

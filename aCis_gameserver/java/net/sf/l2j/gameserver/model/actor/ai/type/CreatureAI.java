@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.model.actor.ai.type;
 
-import org.slf4j.LoggerFactory;
-
 import net.sf.l2j.commons.util.ArraysUtil;
 
 import net.sf.l2j.gameserver.geoengine.GeoEngine;
@@ -17,8 +15,8 @@ import net.sf.l2j.gameserver.model.actor.ai.Desire;
 import net.sf.l2j.gameserver.model.actor.instance.Door;
 import net.sf.l2j.gameserver.model.actor.instance.Folk;
 import net.sf.l2j.gameserver.model.actor.Player;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance.ItemLocation;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.EItemLocation;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.network.serverpackets.AutoAttackStop;
@@ -332,7 +330,7 @@ public class CreatureAI extends AbstractAI {
 		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
 		clientStopAutoAttack();
 
-		if (object instanceof ItemInstance && ((ItemInstance) object).getLocation() != ItemLocation.VOID) {
+		if (object instanceof ItemInstance && ((ItemInstance) object).getLocation() != EItemLocation.VOID) {
 			return;
 		}
 

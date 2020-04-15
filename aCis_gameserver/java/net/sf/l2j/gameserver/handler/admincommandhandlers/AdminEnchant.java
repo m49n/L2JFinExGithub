@@ -1,14 +1,14 @@
 package net.sf.l2j.gameserver.handler.admincommandhandlers;
 
-import org.slf4j.LoggerFactory;
 
+import net.sf.finex.dao.ItemDao;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.xml.ArmorSetData;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.item.ArmorSet;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Armor;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
@@ -21,24 +21,23 @@ import net.sf.l2j.gameserver.skills.L2Skill;
  */
 public class AdminEnchant implements IAdminCommandHandler {
 
-	private static final String[] ADMIN_COMMANDS
-			= {
-				"admin_seteh", // 6
-				"admin_setec", // 10
-				"admin_seteg", // 9
-				"admin_setel", // 11
-				"admin_seteb", // 12
-				"admin_setew", // 7
-				"admin_setes", // 8
-				"admin_setle", // 1
-				"admin_setre", // 2
-				"admin_setlf", // 4
-				"admin_setrf", // 5
-				"admin_seten", // 3
-				"admin_setun", // 0
-				"admin_setba", // 13
-				"admin_enchant"
-			};
+	private static final String[] ADMIN_COMMANDS = {
+		"admin_seteh", // 6
+		"admin_setec", // 10
+		"admin_seteg", // 9
+		"admin_setel", // 11
+		"admin_seteb", // 12
+		"admin_setew", // 7
+		"admin_setes", // 8
+		"admin_setle", // 1
+		"admin_setre", // 2
+		"admin_setlf", // 4
+		"admin_setrf", // 5
+		"admin_seten", // 3
+		"admin_setun", // 0
+		"admin_setba", // 13
+		"admin_enchant"
+	};
 
 	@Override
 	public boolean useAdminCommand(String command, Player activeChar) {
@@ -113,7 +112,7 @@ public class AdminEnchant implements IAdminCommandHandler {
 			final int oldEnchant = item.getEnchantLevel();
 
 			item.setEnchantLevel(ench);
-			item.updateDatabase();
+			ItemDao.updateDatabase(item);
 
 			// If item is equipped, verify the skill obtention/drop (+4 duals, +6 armorset).
 			if (item.isEquipped()) {

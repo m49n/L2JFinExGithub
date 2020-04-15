@@ -1,14 +1,13 @@
 package net.sf.l2j.gameserver.handler.itemhandlers;
 
-import org.slf4j.LoggerFactory;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.data.SkillTable;
-import net.sf.l2j.gameserver.handler.IItemHandler;
+import net.sf.l2j.gameserver.handler.IHandler;
 import net.sf.l2j.gameserver.model.actor.Playable;
 import net.sf.l2j.gameserver.model.actor.Pet;
 import net.sf.l2j.gameserver.model.actor.Player;
-import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.type.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -17,10 +16,13 @@ import net.sf.l2j.gameserver.skills.L2Skill;
 /**
  * @author Kerberos
  */
-public class PetFood implements IItemHandler {
+public class PetFood implements IHandler {
 
 	@Override
-	public void useItem(Playable playable, ItemInstance item, boolean forceUse) {
+	public void invoke(Object... args) {
+		final Playable playable = (Playable) args[0];
+		final ItemInstance item = (ItemInstance) args[1];
+		final boolean forceUse = (boolean) args[2];
 		int itemId = item.getItemId();
 		switch (itemId) {
 			case 2515: // Wolf's food
